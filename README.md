@@ -35,11 +35,20 @@
 
 | Overview | Characters |
 |:---:|:---:|
-| <img src="Docs/images/dash.png" alt="Overview page with the resource library" width="440"> | <img src="Docs/images/Character.png" alt="Character browser with a texture preview" width="440"> |
+| <img src="Images/dash.png" alt="Overview page with the resource library" width="440"> | <img src="Images/Character.png" alt="Character browser with a texture preview" width="440"> |
 | **Objects** | **Textures** |
-| <img src="Docs/images/Objects%26props.png" alt="Object library sorted by category" width="440"> | <img src="Docs/images/Texture.png" alt="Texture browser" width="440"> |
-| **Animations** | |
-| <img src="Docs/images/Animations.png" alt="Animation browser with compatible meshes" width="440"> | |
+| <img src="Images/Objects%26props.png" alt="Object library sorted by category" width="440"> | <img src="Images/Texture.png" alt="Texture browser" width="440"> |
+| **Animations** | **3D viewer** |
+| <img src="Images/Animations.png" alt="Animation browser with compatible meshes" width="440"> | <img src="Images/viewer.png" alt="3D viewer with per-section materials" width="440"> |
+
+### In Blender
+
+Models exported as glTF / GLB open directly in Blender (**File → Import → glTF 2.0**), with their textures and their skeleton.
+
+| Imported model | Imported skeleton |
+|:---:|:---:|
+| <img src="Images/Blander_Render.png" alt="Exported character rendered in Blender with its textures" width="440"> | <img src="Images/Blender_Skelleton.png" alt="Exported character's skeleton in Blender" width="440"> |
+
 
 ## Getting started
 
