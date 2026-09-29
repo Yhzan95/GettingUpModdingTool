@@ -1,0 +1,1045 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:GettingUpModTool" x:Class="GettingUpModTool.MainWindow" Icon="Resources/AppIcon.ico"
+        Title="Getting Up Mod Tool" Width="1520" Height="920" MinWidth="1180" MinHeight="720" Background="{StaticResource WindowBrush}" Foreground="{StaticResource TextBrush}" AllowDrop="True" DragOver="Window_DragOver" Drop="Window_Drop">
+    <Window.Resources>
+        <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource OnAccentBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentDarkBrush}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        <Style x:Key="NavFocusVisual">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="1.5" CornerRadius="5"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="NavButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="14,10"/>
+            <Setter Property="Margin" Value="8,3"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FocusVisualStyle" Value="{StaticResource NavFocusVisual}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border x:Name="NavBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" Padding="{TemplateBinding Padding}" CornerRadius="5">
+                                <DockPanel>
+                                    <TextBlock Text="{TemplateBinding local:NavItem.Icon}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="15" Width="20" Margin="0,0,12,0"
+                                               TextAlignment="Center" VerticalAlignment="Center" Foreground="{TemplateBinding Foreground}"/>
+                                    <ContentPresenter VerticalAlignment="Center" TextElement.Foreground="{TemplateBinding Foreground}">
+                                        <ContentPresenter.Resources>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                            </Style>
+                                        </ContentPresenter.Resources>
+                                    </ContentPresenter>
+                                </DockPanel>
+                            </Border>
+                            <Border x:Name="ActiveBar" Width="3" Margin="0,8" CornerRadius="2" HorizontalAlignment="Left" Background="{StaticResource AccentBrush}" Visibility="Collapsed"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="NavBorder" Property="Background" Value="{StaticResource HoverBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextStrongBrush}"/>
+                            </Trigger>
+                            <Trigger Property="local:NavItem.IsActive" Value="True">
+                                <Setter TargetName="NavBorder" Property="Background" Value="{StaticResource PressedBrush}"/>
+                                <Setter TargetName="ActiveBar" Property="Visibility" Value="Visible"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextStrongBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="NavBorder" Property="Background" Value="{StaticResource PressedBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextStrongBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="{StaticResource Muted2Brush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="NavSectionExpander" TargetType="Expander">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Expander">
+                        <DockPanel>
+                            <ToggleButton DockPanel.Dock="Top" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" Cursor="Hand" Margin="8,0"
+                                          FocusVisualStyle="{StaticResource NavFocusVisual}" AutomationProperties.Name="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="Bd" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" Padding="10,7,14,7" CornerRadius="5">
+                                            <DockPanel>
+                                                <TextBlock x:Name="Chevron" DockPanel.Dock="Right" Text="&#xE70D;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="10" Foreground="{StaticResource SectionLabelBrush}" VerticalAlignment="Center"/>
+                                                <ContentPresenter Content="{Binding Header, RelativeSource={RelativeSource AncestorType=Expander}}" VerticalAlignment="Center" TextElement.Foreground="{StaticResource SectionLabelBrush}" TextElement.FontSize="10" TextElement.FontWeight="SemiBold"/>
+                                            </DockPanel>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource HoverBrush}"/>
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="Chevron" Property="Text" Value="&#xE70E;"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <ContentPresenter x:Name="ExpandSite" Visibility="Collapsed"/>
+                        </DockPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsExpanded" Value="True">
+                                <Setter TargetName="ExpandSite" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+
+        
+
+
+
+        <Style x:Key="ViewerSideTabItem" TargetType="TabItem">
+            <Setter Property="Foreground" Value="{StaticResource TextTertiaryBrush}"/>
+            <Setter Property="Background" Value="{StaticResource PanelBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="TabBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter ContentSource="Header"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource HoverBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextStrongBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource Panel2Brush}"/>
+                                <Setter TargetName="TabBorder" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                                <Setter TargetName="TabBorder" Property="BorderThickness" Value="0,0,0,2"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextStrongBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="{StaticResource Muted2Brush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="DashboardCardButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Height" Value="124"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="Padding" Value="18"/>
+            <Setter Property="Background" Value="{StaticResource CardBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="CardBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="CardBorder" Property="Background" Value="{StaticResource HoverBrush}"/>
+                                <Setter TargetName="CardBorder" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="CardBorder" Property="Background" Value="{StaticResource PillBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SmallPill" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource PillBrush}"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="8,3"/>
+        </Style>
+
+        <Style x:Key="ContentOnlyTabs" TargetType="TabControl">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabControl">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter ContentSource="SelectedContent"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="58"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="32"/>
+        </Grid.RowDefinitions>
+
+        
+        <Border Grid.Row="0" Background="{StaticResource ChromeBrush}" BorderBrush="{StaticResource DividerBrush}" BorderThickness="0,0,0,1">
+            <Grid Margin="14,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="GETTING UP" FontWeight="Bold" FontSize="18"/>
+                    <TextBlock x:Name="VersionText" Text="MOD TOOL" Foreground="{StaticResource AccentBrush}" FontWeight="SemiBold" FontSize="10"/>
+                </StackPanel>
+                <WrapPanel Grid.Column="2" VerticalAlignment="Center">
+                    <ComboBox x:Name="LanguageBox" Width="154" Margin="0,0,10,0" VerticalAlignment="Center" SelectionChanged="LanguageBox_SelectionChanged" ToolTip="Langue / Language">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="{Binding FlagUri}" Width="24" Height="16" Margin="0,0,8,0" Stretch="Fill" SnapsToDevicePixels="True"/>
+                                    <TextBlock Text="{Binding NativeName}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Click="OpenMsh_Click" Style="{StaticResource PrimaryButton}" ToolTip="Ouvrir directement un modèle .msh">＋ Ouvrir un mesh</Button>
+                    <Button Click="OpenBnm_Click" ToolTip="Ouvrir directement une animation .bnm">BNM</Button>
+                    <Button Click="OpenSt_Click" ToolTip="Ouvrir directement un fichier .st">ST</Button>
+                    <Button Click="Clear_Click" ToolTip="Décharger la scène actuelle">Effacer</Button>
+                </WrapPanel>
+            </Grid>
+        </Border>
+
+        
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="234"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="{StaticResource SidebarBrush}" BorderBrush="{StaticResource DividerBrush}" BorderThickness="0,0,1,0">
+                <DockPanel>
+                    <Border DockPanel.Dock="Bottom" Background="{StaticResource WindowBrush}" Padding="10" Margin="8" CornerRadius="8">
+                        <StackPanel>
+                            <TextBlock Text="Raccourci" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                            <TextBlock Text="Glisse un .msh, .st ou .bnm n’importe où dans la fenêtre pour l’ouvrir." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+                        <ScrollViewer.Resources>
+                            <Style TargetType="ScrollBar" BasedOn="{StaticResource {x:Type ScrollBar}}">
+                                <Setter Property="Width" Value="7"/>
+                                <Setter Property="MinWidth" Value="7"/>
+                            </Style>
+                        </ScrollViewer.Resources>
+                        <StackPanel x:Name="NavPanel" Margin="0,10,0,0">
+                            <TextBlock Text="BIBLIOTHÈQUE" Foreground="{StaticResource SectionLabelBrush}" FontWeight="SemiBold" FontSize="10" Margin="18,8,0,7"/>
+                            <Button Style="{StaticResource NavButton}" local:NavItem.Icon="&#xE80F;" Click="NavigateTab_Click" Tag="HomeTab">Vue d’ensemble</Button>
+                            <Button Style="{StaticResource NavButton}" local:NavItem.Icon="&#xE77B;" Click="OpenCharacterBrowser_Click">Personnages</Button>
+                            <Button Style="{StaticResource NavButton}" local:NavItem.Icon="&#xE8B9;" Click="OpenTextureBrowser_Click">Textures</Button>
+                            <Button Style="{StaticResource NavButton}" local:NavItem.Icon="&#xE7B8;" Click="OpenPropsBrowser_Click">Objets</Button>
+                            <Button Style="{StaticResource NavButton}" local:NavItem.Icon="&#xE768;" Click="NavigateTab_Click" Tag="FullGameDbTab">Animations</Button>
+                            <Button Style="{StaticResource NavButton}" local:NavItem.Icon="&#xE890;" Click="NavigateTab_Click" Tag="View3DTab">Vue 3D</Button>
+
+                            <Expander Style="{StaticResource NavSectionExpander}" Header="OUTILS TECHNIQUES" Margin="0,18,0,8" IsExpanded="False">
+                                <StackPanel Margin="0,4,0,0">
+                                    <Button Style="{StaticResource NavButton}" local:NavItem.Icon="&#xE8B7;" Click="NavigateTab_Click" Tag="AssetBrowserTab">Bibliothèque complète</Button>
+                                    <Button Style="{StaticResource NavButton}" local:NavItem.Icon="&#xE9D9;" Click="NavigateTab_Click" Tag="MeshDiagnosticTab">Diagnostic du mesh</Button>
+                                    <Button Style="{StaticResource NavButton}" local:NavItem.Icon="&#xE790;" Click="NavigateTab_Click" Tag="MaterialsTab">Matériaux</Button>
+                                    <Button Style="{StaticResource NavButton}" local:NavItem.Icon="&#xE713;" Click="NavigateTab_Click" Tag="MshExpertTab">MSH avancé</Button>
+                                    <Button Style="{StaticResource NavButton}" local:NavItem.Icon="&#xE805;" Click="NavigateTab_Click" Tag="SkeletonTab">Squelette</Button>
+                                    <Button Style="{StaticResource NavButton}" local:NavItem.Icon="&#xE714;" Click="NavigateTab_Click" Tag="BnmSummaryTab">Animation BNM</Button>
+                                    <Button Style="{StaticResource NavButton}" local:NavItem.Icon="&#xEB9F;" Click="NavigateTab_Click" Tag="StTab">Texture ST</Button>
+                                    <Button Style="{StaticResource NavButton}" local:NavItem.Icon="&#xE943;" Click="NavigateTab_Click" Tag="HexTab">Vue hex</Button>
+                                </StackPanel>
+                            </Expander>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <TabControl Grid.Column="1" x:Name="MainTabs" SelectionChanged="MainTabs_SelectionChanged" Style="{StaticResource ContentOnlyTabs}" Background="{StaticResource WindowBrush}">
+                
+                <TabItem x:Name="HomeTab" Header="Accueil">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="28" MaxWidth="1180" HorizontalAlignment="Left">
+                            <DockPanel Margin="0,0,0,18">
+                                <Border DockPanel.Dock="Right" Style="{StaticResource SmallPill}" VerticalAlignment="Center">
+                                    <TextBlock x:Name="HomeReadyText" Text="Préparation…" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"/>
+                                </Border>
+                                <StackPanel>
+                                    <TextBlock Text="Que veux-tu modifier ?" FontSize="30" FontWeight="Bold"/>
+                                    <TextBlock Text="Commence par une catégorie. Le reste de l’interface s’adapte ensuite à ce que tu sélectionnes." Foreground="{StaticResource MutedBrush}" FontSize="15" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </DockPanel>
+
+                            <Expander IsExpanded="False" Margin="0,0,0,18">
+                                <Expander.Header>
+                                    <DockPanel Width="760">
+                                        <TextBlock Text="Configuration du jeu" FontWeight="SemiBold"/>
+                                        <TextBlock x:Name="AssetSummaryText" DockPanel.Dock="Right" Text="Recherche de l'installation…" Foreground="{StaticResource MutedBrush}" FontSize="11" TextTrimming="CharacterEllipsis" MaxWidth="430"/>
+                                    </DockPanel>
+                                </Expander.Header>
+                                <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="14" Margin="0,8,0,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="Dossier du jeu" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="2,0,0,5"/>
+                                            <TextBox x:Name="GameRootBox" Margin="0,0,12,0" VerticalContentAlignment="Center"/>
+                                        </StackPanel>
+                                        <WrapPanel Grid.Column="1" VerticalAlignment="Bottom">
+                                            <Button Click="DetectGame_Click">Détecter Steam</Button>
+                                            <Button Click="BrowseGame_Click">Parcourir…</Button>
+                                            <Button x:Name="ScanGameButton" Click="ScanGame_Click" Style="{StaticResource PrimaryButton}">Scanner</Button>
+                                        </WrapPanel>
+                                    </Grid>
+                                </Border>
+                            </Expander>
+
+                            <TextBlock Text="Bibliothèque de ressources" FontSize="17" FontWeight="SemiBold" Margin="4,0,0,6"/>
+                            <UniformGrid Columns="2" Margin="-8,0,-8,10">
+                                <Button Style="{StaticResource DashboardCardButton}" Click="OpenCharacterBrowser_Click">
+                                    <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="64"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="👤" FontSize="38" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Text="Personnages" FontSize="20" FontWeight="Bold"/><TextBlock Text="Voir les modèles, variantes et textures" Foreground="{StaticResource MutedBrush}" Margin="0,5,0,0"/><TextBlock x:Name="HomeCharacterCountText" Text="—" Foreground="{StaticResource AccentBrush}" Margin="0,8,0,0"/></StackPanel>
+                                    </Grid>
+                                </Button>
+                                <Button Style="{StaticResource DashboardCardButton}" Click="OpenTextureBrowser_Click">
+                                    <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="64"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="🖼" FontSize="38" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Text="Textures" FontSize="20" FontWeight="Bold"/><TextBlock Text="Rechercher et prévisualiser les textures" Foreground="{StaticResource MutedBrush}" Margin="0,5,0,0"/><TextBlock x:Name="HomeTextureCountText" Text="—" Foreground="{StaticResource AccentBrush}" Margin="0,8,0,0"/></StackPanel>
+                                    </Grid>
+                                </Button>
+                                <Button Style="{StaticResource DashboardCardButton}" Click="OpenPropsBrowser_Click">
+                                    <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="64"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="📦" FontSize="38" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Text="Objets" FontSize="20" FontWeight="Bold"/><TextBlock Text="Parcourir les objets par catégorie" Foreground="{StaticResource MutedBrush}" Margin="0,5,0,0"/><TextBlock x:Name="HomeMeshCountText" Text="—" Foreground="{StaticResource AccentBrush}" Margin="0,8,0,0"/></StackPanel>
+                                    </Grid>
+                                </Button>
+                                <Button Style="{StaticResource DashboardCardButton}" Click="ShowFullGameDb_Click">
+                                    <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="64"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="🎬" FontSize="38" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Text="Animations" FontSize="20" FontWeight="Bold"/><TextBlock Text="Trouver et tester les animations" Foreground="{StaticResource MutedBrush}" Margin="0,5,0,0"/><TextBlock x:Name="HomeAnimationCountText" Text="—" Foreground="{StaticResource AccentBrush}" Margin="0,8,0,0"/></StackPanel>
+                                    </Grid>
+                                </Button>
+                            </UniformGrid>
+
+                            <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16" Margin="0,0,0,16">
+                                <StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Accès rapides · personnages" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="Clique une carte pour filtrer la fenêtre Personnages" Foreground="{StaticResource MutedBrush}" FontSize="11" VerticalAlignment="Center" Margin="18,0,0,0" TextTrimming="CharacterEllipsis"/>
+                                    </Grid>
+                                    <ItemsControl x:Name="CharacterQuickCards" Margin="-5,10,-5,0">
+                                        <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Button Click="OpenCharacterQuick_Click" Tag="{Binding SearchKey}" Width="172" Height="72" Margin="5" Padding="10" Background="{StaticResource CardBrush}">
+                                                    <StackPanel><TextBlock Text="{Binding DisplayName}" FontWeight="Bold" FontSize="14" TextTrimming="CharacterEllipsis"/><TextBlock Text="{Binding CountLabel}" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,4,0,0"/></StackPanel>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                                <Grid>
+                                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Récemment ouverts" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="session actuelle" Foreground="{StaticResource MutedBrush}" FontSize="11" VerticalAlignment="Center" Margin="18,0,0,0"/>
+                                    </Grid>
+                                    <TextBlock Grid.Row="1" x:Name="RecentEmptyText" Text="Aucun fichier ouvert pour le moment." Foreground="{StaticResource MutedBrush}" Margin="0,10,0,0"/>
+                                    <ListBox Grid.Row="2" x:Name="RecentAssetsList" Margin="0,10,0,0" MaxHeight="210" MouseDoubleClick="RecentAssetsList_MouseDoubleClick" Background="{StaticResource SidebarBrush}" BorderBrush="{StaticResource CardBorderBrush}">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <DockPanel Margin="8,5">
+                                                    <Border DockPanel.Dock="Right" Background="{StaticResource PillBrush}" CornerRadius="10" Padding="8,3"><TextBlock Text="{Binding KindLabel}" FontSize="10"/></Border>
+                                                    <StackPanel><TextBlock Text="{Binding Name}" FontWeight="SemiBold"/><TextBlock Text="{Binding Path}" Foreground="{StaticResource MutedBrush}" FontSize="10" TextTrimming="CharacterEllipsis"/></StackPanel>
+                                                </DockPanel>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </Grid>
+                            </Border>
+
+                            <CheckBox x:Name="IncludeOtherFilesCheck" Click="IncludeOtherFiles_Click" Margin="4,14,0,0" Foreground="{StaticResource MutedBrush}">Indexer aussi les fichiers inconnus</CheckBox>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                
+                <TabItem x:Name="FullGameDbTab" Header="Animations / compatibilité · expérimental">
+                    <Grid Margin="18">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Border Background="{StaticResource PanelBrush}" Padding="14" CornerRadius="9" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                            <DockPanel LastChildFill="True">
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="Recherche" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                    <TextBox x:Name="AnimationSearchBox" Width="270" Height="32" Padding="9,5"
+                                             VerticalContentAlignment="Center" TextChanged="AnimationSearchBox_TextChanged"
+                                             ToolTip="Rechercher une famille ou une animation BNM"/>
+                                    <Button Margin="6,0,12,0" Padding="10,4" Click="ClearAnimationSearch_Click" ToolTip="Effacer la recherche">✕</Button>
+                                    <Button Click="RefreshFullGameDatabase_Click">Rafraîchir</Button>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="Animations &amp; compatibilité" FontSize="22" FontWeight="Bold"/>
+                                    <TextBlock Text="Aperçu expérimental : certains clips partiels/layers peuvent rester en pose neutre." Foreground="{StaticResource AccentBrush}" FontSize="11" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                                    <TextBlock x:Name="FullGameSummaryText" Text="Scanne d'abord l'installation du jeu." Foreground="{StaticResource MutedBrush}" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+
+                        <Grid Grid.Row="1" Margin="0,14,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.72*"/>
+                                <ColumnDefinition Width="1.15*"/>
+                                <ColumnDefinition Width="1.35*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="{StaticResource PanelBrush}" CornerRadius="9" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="10" Margin="0,0,7,0">
+                                <Grid>
+                                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                                    <StackPanel Margin="4,2,4,9">
+                                        <TextBlock Text="① Choisir le personnage" FontSize="16" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Famille d'animations" Foreground="{StaticResource MutedBrush}" FontSize="11"/>
+                                    </StackPanel>
+                                    <DataGrid Grid.Row="1" x:Name="FullGameFamilyGrid" AutoGenerateColumns="False" SelectionChanged="FullGameFamilyGrid_SelectionChanged">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Personnage / famille" Binding="{Binding Name}" Width="*"/>
+                                            <DataGridTextColumn Header="Anim." Binding="{Binding AnimationCount}" Width="62"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Column="1" Background="{StaticResource PanelBrush}" CornerRadius="9" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="10" Margin="7,0">
+                                <Grid>
+                                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                                    <StackPanel Margin="4,2,4,9">
+                                        <TextBlock Text="② Choisir une animation" FontSize="16" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Double-clic = inspecter le BNM" Foreground="{StaticResource MutedBrush}" FontSize="11"/>
+                                    </StackPanel>
+                                    <DataGrid Grid.Row="1" x:Name="FullGameAnimationGrid" AutoGenerateColumns="False" MouseDoubleClick="FullGameAnimationGrid_MouseDoubleClick">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Animation" Binding="{Binding Name}" Width="*"/>
+                                            <DataGridTextColumn Header="Taille" Binding="{Binding SizeLabel}" Width="72"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Column="2" Background="{StaticResource PanelBrush}" CornerRadius="9" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="10" Margin="7,0,0,0">
+                                <Grid>
+                                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                                    <StackPanel Margin="4,2,4,9">
+                                        <TextBlock Text="③ Choisir le mesh" FontSize="16" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Le meilleur résultat est normalement en première ligne." Foreground="{StaticResource MutedBrush}" FontSize="11"/>
+                                    </StackPanel>
+                                    <DataGrid Grid.Row="1" x:Name="CompatibleMeshGrid" AutoGenerateColumns="False" MouseDoubleClick="CompatibleMeshGrid_MouseDoubleClick"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                              ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                              MinColumnWidth="40">
+                                        <DataGrid.GroupStyle>
+                                            <GroupStyle>
+                                                <GroupStyle.HeaderTemplate>
+                                                    <DataTemplate>
+                                                        <Border Background="{StaticResource CardBrush}" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="0,0,0,1" Padding="8,5" Margin="0,4,0,2">
+                                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </GroupStyle.HeaderTemplate>
+                                            </GroupStyle>
+                                        </DataGrid.GroupStyle>
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Mesh" Binding="{Binding Name}" Width="240" MinWidth="180">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="ToolTip" Value="{Binding RelativePath}"/>
+                                                        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="Lien" Binding="{Binding AssociationLabel}" Width="125" MinWidth="100"/>
+                                            <DataGridTextColumn Header="Os" Binding="{Binding BoneCountLabel}" Width="44"/>
+                                            <DataGridTextColumn Header="Tracks" Binding="{Binding TrackCountLabel}" Width="52"/>
+                                            <DataGridTextColumn Header="Écart" Binding="{Binding BoneTrackDeltaLabel}" Width="48"/>
+                                            <DataGridTextColumn Header="Squelette" Binding="{Binding SkeletonStatusLabel}" Width="132" MinWidth="110"/>
+                                            <DataGridTextColumn Header="Mapping" Binding="{Binding MappingLabel}" Width="92" MinWidth="80"/>
+                                            <DataGridTextColumn Header="Sect." Binding="{Binding SectionsLabel}" Width="48"/>
+                                            <DataGridTextColumn Header="Format" Binding="{Binding MeshFormats}" Width="100"/>
+                                            <DataGridTextColumn Header="Score" Binding="{Binding ScoreLabel}" Width="52"/>
+                                            <DataGridTextColumn Header="Diagnostic" Binding="{Binding WarningsLabel}" Width="70"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <Border Grid.Row="2" Background="{StaticResource CardBrush}" Padding="10" CornerRadius="9" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1">
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <TextBlock x:Name="CompatibilitySummaryText" Text="Sélectionne une famille puis une animation." VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="4"/>
+                                <WrapPanel Grid.Column="1">
+                                    <Button x:Name="FindCompatibleMeshesButton" Click="FindCompatibleMeshes_Click">Trouver les meshes</Button>
+                                    <Button Click="DiagnoseCompatibleMesh_Click">Diagnostic</Button>
+                                    <Button Click="OpenTextureBrowser_Click" ToolTip="Voir les textures du personnage dans une fenêtre simple avec aperçu direct">🖼 Textures</Button>
+                                    <Button Click="AutoLoadBestMatch_Click" Style="{StaticResource PrimaryButton}" Padding="18,9" ToolTip="Cherche automatiquement le mesh le mieux classé, puis charge le mesh et l’animation.">▶ Charger automatiquement</Button>
+                                    <Button Click="LoadFullGamePair_Click" ToolTip="Charge exactement le mesh sélectionné dans la liste.">Charger le mesh sélectionné</Button>
+                                </WrapPanel>
+                            </Grid>
+                        </Border>
+
+                        <Expander Grid.Row="3" Header="Outils de validation avancée" Margin="0,10,0,0" Foreground="{StaticResource TextSecondaryBrush}">
+                            <StackPanel>
+                                <WrapPanel>
+                                    <Button Click="ValidateBnms_Click">Valider tous les BNM</Button>
+                                    <Button Click="ValidateCharacterMeshes_Click">Valider MSH personnages</Button>
+                                    <Button Click="ValidateCharacterMaterials_Click">Valider matériaux personnages</Button>
+                                    <Button Click="LoadFullGameAnimation_Click">Charger animation seule</Button>
+                                    <Button Click="LoadFullGameMesh_Click">Charger mesh seul</Button>
+                                </WrapPanel>
+                                <DataGrid x:Name="BatchValidationGrid" Height="180" AutoGenerateColumns="False" MouseDoubleClick="BatchValidationGrid_MouseDoubleClick">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="OK" Binding="{Binding Success}" Width="45"/>
+                                        <DataGridTextColumn Header="Type" Binding="{Binding Kind}" Width="55"/>
+                                        <DataGridTextColumn Header="Nom" Binding="{Binding Name}" Width="190"/>
+                                        <DataGridTextColumn Header="Résultat" Binding="{Binding Result}" Width="420"/>
+                                        <DataGridTextColumn Header="Chemin" Binding="{Binding RelativePath}" Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </Expander>
+                    </Grid>
+                </TabItem>
+
+                
+                <TabItem x:Name="AssetBrowserTab" Header="Bibliothèque">
+                    <Grid Margin="18">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Border Background="{StaticResource PanelBrush}" Padding="14" CornerRadius="9" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                            <DockPanel>
+                                <TextBlock x:Name="AssetCountText" DockPanel.Dock="Right" VerticalAlignment="Center" Foreground="{StaticResource AccentBrush}" FontWeight="SemiBold" Text="0 fichier"/>
+                                <StackPanel>
+                                    <TextBlock Text="Bibliothèque du jeu" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextStrongBrush}"/>
+                                    <TextBlock Text="Recherche un fichier par nom. Double-clique pour le charger." Foreground="{StaticResource MutedBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Row="1" Background="{StaticResource CardBrush}" Padding="10" Margin="0,12,0,8" CornerRadius="9" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1">
+                            <WrapPanel VerticalAlignment="Center">
+                                <TextBlock Text="🔎" FontSize="18" VerticalAlignment="Center" Margin="4,0"/>
+                                <TextBox x:Name="AssetSearchBox" Width="300" TextChanged="AssetFilter_Changed" ToolTip="Exemple : Dog, DG_Run, Trane"/>
+                                <TextBlock Text="Type" VerticalAlignment="Center" Margin="12,4,3,4"/>
+                                <ComboBox x:Name="AssetTypeFilterBox" Width="170" SelectedIndex="0" SelectionChanged="AssetFilter_Changed">
+                                    <ComboBoxItem Content="Tous les types"/>
+                                    <ComboBoxItem Content="MSH / Mesh" Tag=".msh"/>
+                                    <ComboBoxItem Content="BNM / Animation" Tag=".bnm"/>
+                                    <ComboBoxItem Content="ST / Texture" Tag=".st"/>
+                                    <ComboBoxItem Content="MTM / Material" Tag=".mtm"/>
+                                    <ComboBoxItem Content="GAT / Attachment" Tag=".gat"/>
+                                    <ComboBoxItem Content="BAN" Tag=".ban"/>
+                                    <ComboBoxItem Content="GIN" Tag=".gin"/>
+                                    <ComboBoxItem Content="CIN / Cinematic" Tag=".cin"/>
+                                    <ComboBoxItem Content="PLR" Tag=".plr"/>
+                                    <ComboBoxItem Content="CAP" Tag=".cap"/>
+                                    <ComboBoxItem Content="SMF" Tag=".smf"/>
+                                    <ComboBoxItem Content="FTS" Tag=".fts"/>
+                                    <ComboBoxItem Content="Autres" Tag="other"/>
+                                </ComboBox>
+                                <TextBlock Text="Dossier" VerticalAlignment="Center" Margin="12,4,3,4"/>
+                                <ComboBox x:Name="AssetFolderFilterBox" Width="390" SelectedIndex="0" SelectionChanged="AssetFilter_Changed" ToolTip="Filtrer par dossier (ex. engine\Animation\Dog)"/>
+                            </WrapPanel>
+                        </Border>
+                        <DataGrid Grid.Row="2" x:Name="AssetGrid" AutoGenerateColumns="False" MouseDoubleClick="AssetGrid_MouseDoubleClick" SelectionChanged="AssetGrid_SelectionChanged">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Type" Binding="{Binding KindLabel}" Width="120"/>
+                                <DataGridTextColumn Header="Nom" Binding="{Binding Name}" Width="250"/>
+                                <DataGridTextColumn Header="Dossier" Binding="{Binding DirectoryRelativePath}" Width="330"/>
+                                <DataGridTextColumn Header="Taille" Binding="{Binding SizeLabel}" Width="85"/>
+                                <DataGridTextColumn Header="Chemin" Binding="{Binding RelativePath}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Border Grid.Row="3" Background="{StaticResource CardBrush}" Padding="8" Margin="0,8,0,0" CornerRadius="9">
+                            <DockPanel>
+                                <WrapPanel DockPanel.Dock="Right">
+                                    <CheckBox x:Name="AutoCompanionsCheck" IsChecked="True" ToolTip="Quand un MSH est chargé, cherche automatiquement ST/GAT/BAN portant le même nom.">Charger fichiers associés</CheckBox>
+                                    <Button Click="LoadSelectedAsset_Click" Style="{StaticResource PrimaryButton}">Charger</Button>
+                                    <Button Click="OpenSelectedAssetFolder_Click">Afficher dans Explorer</Button>
+                                    <Button Click="CopySelectedAssetPath_Click">Copier chemin</Button>
+                                </WrapPanel>
+                                <TextBlock x:Name="SelectedAssetText" Text="Aucun asset sélectionné." VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Foreground="{StaticResource MutedBrush}"/>
+                            </DockPanel>
+                        </Border>
+                    </Grid>
+                </TabItem>
+
+                
+                <TabItem x:Name="View3DTab" Header="Vue 3D">
+                    <Grid Background="{StaticResource WindowBrush}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        
+                        <Border Grid.Row="0" Background="{StaticResource ToolbarBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="9">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Center"><WrapPanel>
+                                    <Button Click="NavigateTab_Click" Tag="FullGameDbTab" ToolTip="Retour à la bibliothèque">← Bibliothèque</Button>
+                                    <Button Click="OpenTextureBrowser_Click" ToolTip="Ouvrir le navigateur de textures">🖼 Textures</Button>
+                                    <Border Width="1" Height="24" Background="{StaticResource CardBorderBrush}" Margin="7,0"/>
+                                    <TextBlock Text="Caméra" VerticalAlignment="Center" Foreground="{StaticResource MutedBrush}" Margin="2,0,5,0"/>
+                                    <Button Click="CameraPreset_Click" Tag="Front" ToolTip="Vue de face">Face</Button>
+                                    <Button Click="CameraPreset_Click" Tag="Back" ToolTip="Vue de dos">Dos</Button>
+                                    <Button Click="CameraPreset_Click" Tag="Left" ToolTip="Vue gauche">Gauche</Button>
+                                    <Button Click="CameraPreset_Click" Tag="Right" ToolTip="Vue droite">Droite</Button>
+                                    <Button Click="CameraPreset_Click" Tag="Top" ToolTip="Vue du dessus">Dessus</Button>
+                                    <Button Click="CameraPreset_Click" Tag="Reset" ToolTip="Réinitialiser la caméra">⟳ Reset</Button>
+                                </WrapPanel></ScrollViewer>
+
+                                <TextBlock Grid.Column="1" x:Name="AnimationTimeText" Text="Aucune animation" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource MutedBrush}"/>
+
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <ComboBox x:Name="ViewportExportFormatComboBox"
+                                              Width="108"
+                                              Height="36"
+                                              Margin="0,0,8,0"
+                                              SelectedIndex="3"
+                                              ToolTip="OBJ / glTF / GLB : mesh à l’état normal · aucune animation exportée">
+                                        <ComboBoxItem Content="PNG" Tag="PNG"/>
+                                        <ComboBoxItem Content="OBJ" Tag="OBJ"/>
+                                        <ComboBoxItem Content="glTF" Tag="GLTF"/>
+                                        <ComboBoxItem Content="GLB" Tag="GLB"/>
+                                    </ComboBox>
+                                    <Button Click="ExportSelectedFormat_Click"
+                                            Style="{StaticResource PrimaryButton}"
+                                            MinWidth="126"
+                                            ToolTip="Exporter dans le format sélectionné">⬇ Exporter</Button>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*" MinWidth="360"/>
+                                <ColumnDefinition Width="5"/>
+                                <ColumnDefinition Width="2*" MinWidth="270" MaxWidth="460"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid Grid.Column="0" Background="{StaticResource CanvasBrush}">
+                                <Viewport3D x:Name="ModelViewport" ClipToBounds="True"/>
+
+                                <Border HorizontalAlignment="Left" VerticalAlignment="Top" Margin="12" Background="{StaticResource OverlayBrush}" BorderBrush="{StaticResource BorderStrongBrush}" BorderThickness="1" Padding="9" CornerRadius="7">
+                                    <StackPanel>
+                                        <TextBlock Text="Vue 3D" FontWeight="Bold" Foreground="{StaticResource AccentBrush}"/>
+                                        <TextBlock Text="Gauche : tourner  ·  Droit : déplacer  ·  Molette : zoom" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,3,0,0"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="12" Background="{StaticResource OverlayBrush}" BorderBrush="{StaticResource BorderStrongBrush}" BorderThickness="1" Padding="9" CornerRadius="7" MaxWidth="720">
+                                    <TextBlock x:Name="MeshStatsText" Text="Aucun mesh chargé." TextWrapping="Wrap"/>
+                                </Border>
+
+                                
+                                <Expander HorizontalAlignment="Right" VerticalAlignment="Top" Margin="12" Header="⚙ Animation &amp; affichage" Background="{StaticResource OverlayBrush}" BorderBrush="{StaticResource InfoBorderBrush}" BorderThickness="1" Padding="8">
+                                    <StackPanel Margin="3,7,3,3" Width="310">
+                                        <WrapPanel>
+                                            <CheckBox x:Name="ShowMeshCheck" IsChecked="True" Click="SceneVisibility_Click">Mesh</CheckBox>
+                                            <CheckBox x:Name="ShowSkeletonCheck" IsChecked="False" Click="SceneVisibility_Click">Squelette</CheckBox>
+                                            <CheckBox x:Name="ApplySkinningCheck" IsChecked="True" Click="AnimationOption_Click">Skinning</CheckBox>
+                                            <CheckBox x:Name="RootMotionCheck" IsChecked="False" Click="AnimationOption_Click">Root motion</CheckBox>
+                                        </WrapPanel>
+                                        <Separator Margin="0,6"/>
+                                        <WrapPanel>
+                                            <Button Click="PlayAnimation_Click" Style="{StaticResource PrimaryButton}">▶ Play</Button>
+                                            <Button Click="PauseAnimation_Click">⏸ Pause</Button>
+                                            <Button Click="StopAnimation_Click">■ Stop</Button>
+                                        </WrapPanel>
+                                        <WrapPanel Margin="0,5,0,0">
+                                            <TextBlock Text="Vitesse" VerticalAlignment="Center" Foreground="{StaticResource MutedBrush}" Margin="2,0,5,0"/>
+                                            <ComboBox x:Name="AnimationSpeedBox" Width="78" SelectedIndex="2">
+                                                <ComboBoxItem Content="0.25x"/><ComboBoxItem Content="0.5x"/><ComboBoxItem Content="1.0x"/><ComboBoxItem Content="2.0x"/>
+                                            </ComboBox>
+                                            <CheckBox x:Name="AnimationLoopCheck" IsChecked="True">Loop</CheckBox>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Expander>
+                            </Grid>
+
+                            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource Panel2Brush}" ShowsPreview="True" ResizeBehavior="PreviousAndNext"/>
+
+                            <Border Grid.Column="2" Background="{StaticResource SidePanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1,0,0,0">
+                                <TabControl Background="{StaticResource SidePanelBrush}" BorderThickness="0" Margin="0" ItemContainerStyle="{StaticResource ViewerSideTabItem}">
+                                    <TabItem Header="Sections">
+                                        <Grid Margin="11">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <DockPanel Margin="0,0,0,8">
+                                                <Border DockPanel.Dock="Right" Style="{StaticResource SmallPill}"><TextBlock x:Name="ViewerSectionCountText" Text="0 section" FontSize="11"/></Border>
+                                                <TextBlock Text="Sections &amp; matériaux" FontSize="16" FontWeight="SemiBold"/>
+                                            </DockPanel>
+                                            <WrapPanel Grid.Row="1" Margin="0,0,0,8">
+                                                <Button Click="ViewportShowAllSections_Click">Tout afficher</Button>
+                                                <Button Click="ViewportSoloSection_Click">Solo</Button>
+                                            </WrapPanel>
+                                            <ListBox x:Name="ViewportSectionsList" Grid.Row="2" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Stretch" SelectionChanged="ViewportSectionsList_SelectionChanged">
+                                                <ListBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Background="{StaticResource Panel2Brush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="7" Padding="8" Margin="0,0,0,6">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                                                <CheckBox IsChecked="{Binding IsVisible, Mode=TwoWay}" Click="ViewportSectionVisibility_Click" VerticalAlignment="Top" Margin="0,2,8,0"/>
+                                                                <StackPanel Grid.Column="1">
+                                                                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold"/>
+                                                                    <TextBlock Text="{Binding Material}" Foreground="{StaticResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                                                    <TextBlock Text="{Binding Texture}" Foreground="{StaticResource MutedBrush}" FontSize="11" TextTrimming="CharacterEllipsis"/>
+                                                                </StackPanel>
+                                                            </Grid>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ListBox.ItemTemplate>
+                                            </ListBox>
+                                            <TextBlock Grid.Row="3" x:Name="ViewerSelectedSectionText" Text="Sélectionne une section pour l'inspecter." Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="2,7,2,0"/>
+                                        </Grid>
+                                    </TabItem>
+
+                                    <TabItem Header="Inspecteur">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                            <StackPanel Margin="12">
+                                                <Border Background="{StaticResource Panel2Brush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,10">
+                                                    <StackPanel>
+                                                        <TextBlock x:Name="ViewerAssetNameText" Text="Aucun mesh" FontSize="17" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                                                        <TextBlock x:Name="ViewerAssetPathText" Text="—" Foreground="{StaticResource MutedBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                                                    </StackPanel>
+                                                </Border>
+                                                <TextBlock Text="Informations" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                                <TextBlock x:Name="ViewerInspectorText" Text="Charge un mesh pour afficher ses informations." TextWrapping="Wrap" LineHeight="20"/>
+                                                <Separator Margin="0,10"/>
+                                                <TextBlock Text="Diagnostic rapide" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                                <TextBlock x:Name="ViewerDiagnosticText" Text="—" TextWrapping="Wrap" LineHeight="21"/>
+                                                <Button Click="NavigateTab_Click" Tag="MeshDiagnosticTab" Margin="0,12,0,0">Diagnostic complet</Button>
+                                                <Button Click="OpenTextureBrowser_Click">Voir les textures</Button>
+                                            </StackPanel>
+                                        </ScrollViewer>
+                                    </TabItem>
+
+                                    <TabItem Header="UV / Texture">
+                                        <Grid Margin="11">
+                                            <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                                            <Border Background="{StaticResource CanvasBrush}" BorderBrush="{StaticResource BorderStrongBrush}" BorderThickness="1" CornerRadius="6" Padding="7" Margin="0,0,0,5">
+                                                <Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                                                    <TextBlock Text="Texture de la section" FontWeight="SemiBold"/>
+                                                    <Image Grid.Row="1" x:Name="ViewerTexturePreviewImage" Stretch="Uniform" Margin="0,6" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                    <TextBlock Grid.Row="2" x:Name="ViewerTextureInfoText" Text="Aucune texture" Foreground="{StaticResource MutedBrush}" FontSize="11" TextTrimming="CharacterEllipsis"/>
+                                                </Grid>
+                                            </Border>
+                                            <Border Grid.Row="1" Background="{StaticResource CanvasBrush}" BorderBrush="{StaticResource BorderStrongBrush}" BorderThickness="1" CornerRadius="6" Padding="7" Margin="0,5,0,0">
+                                                <Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                                                    <TextBlock Text="Dépliage UV" FontWeight="SemiBold"/>
+                                                    <Grid Grid.Row="1" Margin="0,6"><Image x:Name="ViewerUvTextureImage" Stretch="Fill" Opacity="0.42"/><Image x:Name="ViewerUvOverlayImage" Stretch="Fill"/></Grid>
+                                                    <TextBlock Grid.Row="2" x:Name="ViewerUvInfoText" Text="Sélectionne une section." Foreground="{StaticResource MutedBrush}" FontSize="11"/>
+                                                </Grid>
+                                            </Border>
+                                        </Grid>
+                                    </TabItem>
+
+                                    <TabItem Header="Os">
+                                        <Grid Margin="11">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <DockPanel>
+                                                <TextBlock Text="Squelette / Os" FontSize="16" FontWeight="SemiBold"/>
+                                                <TextBlock x:Name="ViewerBoneHintText" Text="Clique sur un os pour l'inspecter" Foreground="{StaticResource MutedBrush}" FontSize="10" Margin="10,3,0,0"/>
+                                            </DockPanel>
+                                            <ListBox Grid.Row="1" x:Name="ViewerSkeletonList" Margin="0,8,0,8" Background="{StaticResource CanvasBrush}" BorderBrush="{StaticResource BorderStrongBrush}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" SelectionChanged="ViewerSkeletonList_SelectionChanged"/>
+                                            <Border Grid.Row="2" Background="{StaticResource ToolbarBrush}" BorderBrush="{StaticResource BorderStrongBrush}" BorderThickness="1" CornerRadius="6" Padding="9">
+                                                <StackPanel>
+                                                    <TextBlock x:Name="ViewerBoneDetailsText" Text="Sélectionne un os." Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" TextWrapping="Wrap"/>
+                                                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                                        <Button x:Name="FocusBoneButton" Content="Cadrer sur l'os" Click="FocusSelectedBone_Click" IsEnabled="False" Margin="0,0,8,0"/>
+                                                        <Button Content="Afficher le squelette" Click="ShowSkeletonFromBones_Click"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Border>
+                                        </Grid>
+                                    </TabItem>
+                                </TabControl>
+                            </Border>
+
+                            
+                            <Grid Visibility="Collapsed">
+                                <Image x:Name="ViewerCompareLeftImage"/>
+                                <Image x:Name="ViewerCompareRightImage"/>
+                            </Grid>
+                        </Grid>
+
+                        
+                        <Border Grid.Row="2" Background="{StaticResource ToolbarBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" Padding="7">
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <TextBlock Text="Animation" VerticalAlignment="Center" Foreground="{StaticResource MutedBrush}" Margin="4,0,8,0"/>
+                                <Slider Grid.Column="1" x:Name="AnimationSlider" Minimum="0" Maximum="1" Value="0" Margin="8,0" ValueChanged="AnimationSlider_ValueChanged"/>
+                                <TextBlock Grid.Column="2" Text="Prêt" Foreground="{StaticResource SuccessBrush}" VerticalAlignment="Center" Margin="14,0,6,0"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </TabItem>
+
+                
+                <TabItem x:Name="MaterialsTab" Header="Matériaux">
+                    <Grid Margin="18">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Border Background="{StaticResource PanelBrush}" Padding="14" CornerRadius="9" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,0,0,10">
+                            <DockPanel>
+                                <Button DockPanel.Dock="Right" Click="NavigateTab_Click" Tag="View3DTab" Style="{StaticResource PrimaryButton}">Voir le résultat 3D →</Button>
+                                <StackPanel>
+                                    <TextBlock Text="Matériaux &amp; textures du personnage" FontSize="22" FontWeight="Bold"/>
+                                    <TextBlock Text="Chaque section du MSH peut avoir sa propre texture. Les variantes alternatives sont masquées automatiquement quand elles sont reconnues." Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,4,12,0"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+
+                        <Border Grid.Row="1" Background="{StaticResource CardBrush}" Padding="11" CornerRadius="9" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1" Margin="0,0,0,10">
+                            <TextBlock x:Name="MaterialsSummaryText" Text="Aucun matériau analysé." TextWrapping="Wrap" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        </Border>
+
+                        <DataGrid Grid.Row="2" x:Name="MaterialsGrid" AutoGenerateColumns="False" CanUserAddRows="False" SelectionMode="Single">
+                            <DataGrid.Columns>
+                                <DataGridCheckBoxColumn Header="Visible" Binding="{Binding IsVisible, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="64"/>
+                                <DataGridTextColumn Header="Section" Binding="{Binding SectionIndex}" Width="58" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Groupe / variante" Binding="{Binding RenderGroupName}" Width="170" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Matériau" Binding="{Binding MaterialName}" Width="150" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Texture référencée" Binding="{Binding TextureName}" Width="210" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Fichier ST" Binding="{Binding TextureFileName}" Width="210" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="État" Binding="{Binding StatusLabel}" Width="120" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Règle auto" Binding="{Binding AutoRule}" Width="*" IsReadOnly="True"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <Border Grid.Row="3" Background="{StaticResource ToolbarBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1,1,1,1" CornerRadius="9" Padding="9" Margin="0,10,0,0">
+                            <DockPanel>
+                                <TextBlock Text="Astuce : si un personnage a deux coiffures/capuches superposées, garde seulement la bonne variante visible." Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" TextWrapping="Wrap" Margin="4,0,10,0"/>
+                                <WrapPanel DockPanel.Dock="Right">
+                                    <Button Click="AutoMaterialVisibility_Click" Style="{StaticResource PrimaryButton}">✨ Mode propre auto</Button>
+                                    <Button Click="ShowAllMaterials_Click">Tout afficher</Button>
+                                    <Button Click="ApplyMaterialVisibility_Click">Appliquer visibilité</Button>
+                                    <Button Click="OpenSelectedMaterialTexture_Click">Voir texture dans Explorer</Button>
+                                </WrapPanel>
+                            </DockPanel>
+                        </Border>
+                    </Grid>
+                </TabItem>
+
+                
+                <TabItem x:Name="MeshDiagnosticTab" Header="Diagnostic MSH">
+                    <Grid Margin="18">
+                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="190"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                        <Border Background="{StaticResource PanelBrush}" Padding="14" CornerRadius="9" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,0,0,10">
+                            <DockPanel>
+                                <WrapPanel DockPanel.Dock="Right">
+                                    <Button Click="OpenMsh_Click">Choisir un MSH</Button>
+                                    <Button Click="DiagnoseCurrentMsh_Click" Style="{StaticResource PrimaryButton}">Relancer le diagnostic</Button>
+                                </WrapPanel>
+                                <StackPanel>
+                                    <TextBlock Text="Mesh Doctor" FontSize="22" FontWeight="Bold"/>
+                                    <TextBlock x:Name="MshDiagnosticSummaryText" Text="Ouvre un MSH puis lance le diagnostic." Margin="0,4,0,0" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                        <GroupBox Grid.Row="1" Header="Ce qui semble incorrect" Margin="0,0,0,8">
+                            <DataGrid x:Name="MshIssuesGrid" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Niveau" Binding="{Binding SeverityLabel}" Width="90"/>
+                                    <DataGridTextColumn Header="Code" Binding="{Binding Code}" Width="180"/>
+                                    <DataGridTextColumn Header="Explication" Binding="{Binding Message}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                        <GroupBox Grid.Row="2" Header="Sections du mesh">
+                            <DataGrid x:Name="MshSectionsGrid" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="#" Binding="{Binding Index}" Width="38"/>
+                                    <DataGridTextColumn Header="Vertex off" Binding="{Binding VertexOffsetHex}" Width="90"/>
+                                    <DataGridTextColumn Header="Vertices" Binding="{Binding VertexCount}" Width="75"/>
+                                    <DataGridTextColumn Header="Format" Binding="{Binding FormatLabel}" Width="120"/>
+                                    <DataGridTextColumn Header="Weights" Binding="{Binding WeightOffset}" Width="65"/>
+                                    <DataGridTextColumn Header="Joints" Binding="{Binding BoneIndicesOffset}" Width="60"/>
+                                    <DataGridTextColumn Header="Palette" Binding="{Binding PaletteCount}" Width="60"/>
+                                    <DataGridTextColumn Header="Lots" Binding="{Binding DrawBatchCount}" Width="50"/>
+                                    <DataGridTextColumn Header="Palette globale" Binding="{Binding PaletteLabel}" Width="220"/>
+                                    <DataGridTextColumn Header="Index off" Binding="{Binding IndexOffsetHex}" Width="90"/>
+                                    <DataGridTextColumn Header="Indices" Binding="{Binding TotalIndexCount}" Width="70"/>
+                                    <DataGridTextColumn Header="Triangles" Binding="{Binding TotalTriangleCount}" Width="75"/>
+                                    <DataGridTextColumn Header="Couverture" Binding="{Binding CombinedCoverageLabel}" Width="80"/>
+                                    <DataGridTextColumn Header="Primitive" Binding="{Binding PrimitiveLabel}" Width="95"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                    </Grid>
+                </TabItem>
+
+                
+                <TabItem x:Name="MshExpertTab" Header="MSH avancé">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="22" MaxWidth="1100" HorizontalAlignment="Left">
+                            <TextBlock Text="MSH avancé" FontSize="24" FontWeight="Bold"/>
+                            <TextBlock Text="Utilise cette page seulement si le Mesh Doctor n'arrive pas à lire correctement un fichier. Les personnages courants ne devraient pas nécessiter ces réglages." Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,4,0,16"/>
+                            <Border Background="{StaticResource PanelBrush}" Padding="14" CornerRadius="9" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                                <StackPanel>
+                                    <UniformGrid Columns="4">
+                                        <TextBlock Text="Vertex offset" VerticalAlignment="Center" Margin="4"/><TextBox x:Name="VertexOffsetBox" Text="0"/>
+                                        <TextBlock Text="Vertex count" VerticalAlignment="Center" Margin="4"/><TextBox x:Name="VertexCountBox" Text="100"/>
+                                        <TextBlock Text="Stride" VerticalAlignment="Center" Margin="4"/><TextBox x:Name="StrideBox" Text="32"/>
+                                        <TextBlock Text="Position offset" VerticalAlignment="Center" Margin="4"/><TextBox x:Name="PositionOffsetBox" Text="0"/>
+                                        <TextBlock Text="Normal offset" VerticalAlignment="Center" Margin="4"/><TextBox x:Name="NormalOffsetBox" Text=""/>
+                                        <TextBlock Text="Normal format" VerticalAlignment="Center" Margin="4"/>
+                                        <ComboBox x:Name="NormalFormatBox" SelectedIndex="0"><ComboBoxItem Content="Float3"/><ComboBoxItem Content="Packed UNorm8"/></ComboBox>
+                                        <TextBlock Text="UV offset" VerticalAlignment="Center" Margin="4"/><TextBox x:Name="UvOffsetBox" Text=""/>
+                                        <TextBlock Text="Bone weights offset" VerticalAlignment="Center" Margin="4"/><TextBox x:Name="BoneWeightsOffsetBox" Text=""/>
+                                        <TextBlock Text="Bone indices offset" VerticalAlignment="Center" Margin="4"/><TextBox x:Name="BoneIndicesOffsetBox" Text=""/>
+                                        <TextBlock Text="Bone index divisor" VerticalAlignment="Center" Margin="4"/><TextBox x:Name="BoneIndexDivisorBox" Text="1"/>
+                                        <TextBlock Text="Index offset" VerticalAlignment="Center" Margin="4"/><TextBox x:Name="IndexOffsetBox" Text=""/>
+                                        <TextBlock Text="Index count" VerticalAlignment="Center" Margin="4"/><TextBox x:Name="IndexCountBox" Text="0"/>
+                                        <TextBlock Text="Index size" VerticalAlignment="Center" Margin="4"/>
+                                        <ComboBox x:Name="IndexSizeBox" SelectedIndex="0"><ComboBoxItem Content="UInt16"/><ComboBoxItem Content="UInt32"/></ComboBox>
+                                        <TextBlock Text="Primitive" VerticalAlignment="Center" Margin="4"/>
+                                        <ComboBox x:Name="PrimitiveBox" SelectedIndex="0"><ComboBoxItem Content="TriangleList"/><ComboBoxItem Content="TriangleStrip"/></ComboBox>
+                                    </UniformGrid>
+                                    <WrapPanel Margin="0,10,0,4">
+                                        <Button Click="AutoAnalyzeMsh_Click" Style="{StaticResource PrimaryButton}">Analyser automatiquement</Button>
+                                        <Button Click="DiagnoseCurrentMsh_Click">Diagnostic MSH</Button>
+                                        <Button Click="PreviewMsh_Click">Aperçu 3D</Button>
+                                        <Button Click="DetectCandidates_Click">Détecter candidats</Button>
+                                        <Button Click="ExportObj_Click">Exporter OBJ</Button>
+                                        <Button Click="ExportGltf_Click">Exporter glTF</Button>
+                                    </WrapPanel>
+                                    <CheckBox x:Name="UseAllSectionsCheck" IsChecked="True" Click="UseAllSections_Click">Assembler toutes les sections automatiquement</CheckBox>
+                                    <Border Background="{StaticResource SidebarBrush}" Padding="9" Margin="4,6" CornerRadius="4"><TextBlock x:Name="AutoDetectText" Text="Aucune analyse automatique." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}"/></Border>
+                                </StackPanel>
+                            </Border>
+                            <GroupBox Header="Candidats heuristiques" Margin="0,12,0,0">
+                                <DataGrid x:Name="CandidatesGrid" Height="260" MouseDoubleClick="CandidatesGrid_MouseDoubleClick"/>
+                            </GroupBox>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                
+                <TabItem x:Name="SkeletonTab" Header="Squelette">
+                    <Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                        <Border Background="{StaticResource PanelBrush}" Padding="10" Margin="0,0,0,6" CornerRadius="5"><TextBlock x:Name="SkeletonSummaryText" Text="Aucun squelette détecté." TextWrapping="Wrap"/></Border>
+                        <DataGrid Grid.Row="1" x:Name="SkeletonGrid"/>
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="SkinningTab" Header="Skinning"><Grid Margin="12"><DataGrid x:Name="SkinningGrid"/></Grid></TabItem>
+                <TabItem x:Name="BnmSummaryTab" Header="BNM Résumé">
+                    <Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                        <Border Background="{StaticResource PanelBrush}" Padding="10" Margin="0,0,0,6" CornerRadius="5"><TextBlock x:Name="BnmSummaryText" Text="Aucune animation BNM chargée." TextWrapping="Wrap"/></Border>
+                        <DataGrid Grid.Row="1" x:Name="BnmTracksGrid"/>
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="BnmKeysTab" Header="BNM Clés décodées">
+                    <Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                        <Border Background="{StaticResource PanelBrush}" Padding="10" Margin="0,0,0,6" CornerRadius="5"><TextBlock Text="Clés de rotation/translation BNM décodées." TextWrapping="Wrap"/></Border>
+                        <DataGrid Grid.Row="1" x:Name="BnmKeysGrid"/>
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="AnimationDebugTab" Header="Animation Debug">
+                    <Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                        <Border Background="{StaticResource PanelBrush}" Padding="10" Margin="0,0,0,6" CornerRadius="5"><TextBlock x:Name="AnimationDebugSummaryText" Text="Charge un MSH skinné puis son BNM." TextWrapping="Wrap"/></Border>
+                        <DataGrid Grid.Row="1" x:Name="AnimationDebugGrid"/>
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="BnmDiffTab" Header="BNM Diff"><Grid Margin="12"><DataGrid x:Name="BnmDiffGrid"/></Grid></TabItem>
+                <TabItem x:Name="StTab" Header="ST Texture">
+                    <Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                        <Border Background="{StaticResource PanelBrush}" Padding="10" Margin="0,0,0,6" CornerRadius="5"><TextBlock x:Name="StSummaryText" Text="Aucune texture ST chargée." TextWrapping="Wrap"/></Border>
+                        <Border Grid.Row="1" Background="{StaticResource CanvasBrush}" Padding="10"><ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"><Image x:Name="StPreviewImage" Stretch="None" SnapsToDevicePixels="True"/></ScrollViewer></Border>
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="GatTab" Header="GAT Attachments"><Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions><Border Background="{StaticResource PanelBrush}" Padding="10" Margin="0,0,0,6"><TextBlock x:Name="GatSummaryText" Text="Aucun GAT chargé." TextWrapping="Wrap"/></Border><DataGrid Grid.Row="1" x:Name="GatGrid"/></Grid></TabItem>
+                <TabItem x:Name="BanTab" Header="BAN Sections"><Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions><Border Background="{StaticResource PanelBrush}" Padding="10" Margin="0,0,0,6"><TextBlock x:Name="BanSummaryText" Text="Aucun BAN chargé." TextWrapping="Wrap"/></Border><DataGrid Grid.Row="1" x:Name="BanGrid"/></Grid></TabItem>
+                <TabItem x:Name="HexTab" Header="Hex"><Grid><TextBox x:Name="HexTextBox" FontFamily="Consolas" FontSize="12" IsReadOnly="True" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" TextWrapping="NoWrap" Background="{StaticResource ChromeBrush}" Foreground="{StaticResource TextSecondaryBrush}"/></Grid></TabItem>
+                <TabItem x:Name="MtmStringsTab" Header="MTM Strings"><Grid Margin="12"><DataGrid x:Name="MtmStringsGrid"/></Grid></TabItem>
+                <TabItem x:Name="MtmNumbersTab" Header="MTM Nombres"><Grid Margin="12"><DataGrid x:Name="MtmNumbersGrid"/></Grid></TabItem>
+                <TabItem x:Name="MtmDiffTab" Header="MTM Diff"><Grid Margin="12"><DataGrid x:Name="MtmDiffGrid"/></Grid></TabItem>
+            </TabControl>
+        </Grid>
+
+        
+        <Border Grid.Row="2" Background="{StaticResource ChromeBrush}" BorderBrush="{StaticResource DividerBrush}" BorderThickness="0,1,0,0" Padding="10,0">
+            <DockPanel>
+                <TextBlock x:Name="StatusText" Text="Prêt." VerticalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}"/>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

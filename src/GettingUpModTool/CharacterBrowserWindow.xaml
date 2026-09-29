@@ -1,0 +1,123 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="GettingUpModTool.CharacterBrowserWindow" Icon="Resources/AppIcon.ico"
+        Title="Personnages" Width="1180" Height="760" MinWidth="980" MinHeight="620" WindowStartupLocation="CenterOwner" ResizeMode="CanResize" Background="{StaticResource WindowBrush}" Foreground="{StaticResource TextBrush}" ShowInTaskbar="False">
+    <Window.Resources>
+        </Window.Resources>
+
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="14" Margin="0,0,0,12">
+            <DockPanel>
+                <TextBlock x:Name="CharacterCountText" DockPanel.Dock="Right" VerticalAlignment="Center" Foreground="{StaticResource AccentBrush}" FontWeight="SemiBold" Margin="16,0,0,0"/>
+                <StackPanel>
+                    <TextBlock Text="Personnages" FontSize="24" FontWeight="Bold"/>
+                    <TextBlock Text="Uniquement les meshes de personnages et leurs textures. Aucune animation dans cette fenêtre." Foreground="{StaticResource MutedBrush}" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="430"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Margin="2,0,2,9">
+                        <TextBlock Text="Rechercher un personnage / mesh" FontWeight="SemiBold" Margin="2,0,0,4"/>
+                        <TextBox x:Name="CharacterSearchBox" TextChanged="CharacterSearchBox_TextChanged" ToolTip="Exemple : Trane, Gabe, Dog, ShannaRay…"/>
+                    </StackPanel>
+                    <ListBox Grid.Row="1" x:Name="CharacterMeshList" SelectionChanged="CharacterMeshList_SelectionChanged" MouseDoubleClick="CharacterMeshList_MouseDoubleClick" ScrollViewer.CanContentScroll="True" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="{Binding DirectoryRelativePath}" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,3,0,0" TextTrimming="CharacterEllipsis"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="2" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Background="{StaticResource ToolbarBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="11" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock x:Name="CharacterTitleText" Text="Choisis un mesh" FontSize="18" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="CharacterInfoText" Text="Les textures liées apparaîtront ici." Foreground="{StaticResource MutedBrush}" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="330"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Textures du mesh" FontWeight="SemiBold" Margin="2,0,0,6"/>
+                            <ListBox Grid.Row="1" x:Name="CharacterTextureList" SelectionChanged="CharacterTextureList_SelectionChanged">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <DockPanel LastChildFill="True">
+                                                <Border DockPanel.Dock="Right" Background="{StaticResource PillBrush}" CornerRadius="3" Padding="5,2" Margin="8,0,0,0">
+                                                    <TextBlock Text="{Binding SourceLabel}" FontSize="10" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                                </Border>
+                                                <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                            </DockPanel>
+                                            <TextBlock Text="{Binding DetailLine}" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,3,0,0" TextTrimming="CharacterEllipsis"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+
+                        <Border Grid.Column="2" Background="{StaticResource CanvasBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8">
+                            <Grid>
+                                <Viewbox Stretch="Uniform" Margin="18">
+                                    <Image x:Name="CharacterTexturePreviewImage" Stretch="None" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                </Viewbox>
+                                <TextBlock x:Name="CharacterTexturePreviewMessage" Text="Sélectionne une texture" Foreground="{StaticResource Muted2Brush}" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="9" Margin="0,12,0,0">
+            <DockPanel>
+                <TextBlock x:Name="CharacterStatusText" Text="Double-clique un mesh pour l'ouvrir directement en 3D." Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" TextWrapping="Wrap" Margin="4,0,12,0"/>
+                <WrapPanel DockPanel.Dock="Right">
+                    <Button x:Name="OpenMeshFolderButton" Click="OpenMeshFolder_Click" IsEnabled="False">Afficher dans Explorer</Button>
+                    <Button x:Name="ExportCharacterPngButton" Click="ExportCharacterPng_Click" IsEnabled="False">Exporter PNG</Button>
+                    <Button x:Name="OpenCharacterTexturesButton" Click="OpenCharacterTextures_Click" IsEnabled="False">🖼 Toutes ses textures</Button>
+                    <Button x:Name="LoadCharacterMeshButton" Click="LoadCharacterMesh_Click" IsEnabled="False" Style="{StaticResource PrimaryButton}">Voir le mesh en 3D</Button>
+                    <Button Click="Close_Click">Fermer</Button>
+                </WrapPanel>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

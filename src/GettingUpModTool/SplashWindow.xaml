@@ -1,0 +1,60 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="GettingUpModTool.SplashWindow"
+        Title="Getting Up Mod Tool" Icon="Resources/AppIcon.ico"
+        Width="560" Height="340" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ShowInTaskbar="True">
+    <Window.Resources>
+        <Style x:Key="SplashProgress" TargetType="ProgressBar">
+            <Setter Property="Height" Value="6"/>
+            <Setter Property="Minimum" Value="0"/>
+            <Setter Property="Maximum" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Grid>
+                            <Border x:Name="PART_Track" Background="{StaticResource PillBrush}" CornerRadius="3"/>
+                            <Border x:Name="PART_Indicator" HorizontalAlignment="Left" Background="{StaticResource AccentBrush}" CornerRadius="3"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Border Margin="16" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderStrongBrush}" BorderThickness="1" CornerRadius="12">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="18" ShadowDepth="0" Opacity="0.55" Color="Black"/>
+        </Border.Effect>
+        <Grid>
+            <Border Height="3" VerticalAlignment="Top" Margin="24,0" CornerRadius="0,0,3,3" Background="{StaticResource AccentBrush}"/>
+
+            <Grid Margin="32,30,32,24">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Orientation="Horizontal">
+                    <Image x:Name="LogoImage" Width="64" Height="64" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <StackPanel Margin="18,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="GETTING UP" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TextStrongBrush}"/>
+                        <TextBlock x:Name="VersionText" Text="MOD TOOL" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <TextBlock Grid.Row="2" x:Name="StepText" Text="Démarrage…" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}"
+                           TextTrimming="CharacterEllipsis" Margin="0,0,0,10"/>
+
+                <ProgressBar Grid.Row="3" x:Name="LoadingBar" Style="{StaticResource SplashProgress}" Value="0"/>
+
+                <DockPanel Grid.Row="4" Margin="0,10,0,0">
+                    <TextBlock DockPanel.Dock="Right" x:Name="PercentText" Text="0 %" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                    <TextBlock x:Name="DetailText" Text=" " FontSize="11" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis"/>
+                </DockPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
