@@ -136,6 +136,9 @@ Attach `crash.log` when you report a bug.
 - A few unusual BNM variants are still unsupported.
 - The tool reads the game files but never modifies them.
 
+## Special Thanks to:
+[GettingUpTool By Asbra](https://github.com/Asbra/GettingUpTool)
+
 ## Contributing
 
 Bug reports and pull requests are welcome. Please include:
