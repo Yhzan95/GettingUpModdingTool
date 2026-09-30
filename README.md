@@ -19,8 +19,14 @@
 > Unofficial community project, not affiliated with or endorsed by the game's publisher, developer or rights holders.
 > **No game files are included** — you need your own copy of the game.
 
-## Features
+## Documentation
+The complete user and developer documentation is available in the **[Wiki](https://github.com/Yhzan95/GettingUpModdingTool/wiki)**.
+**New to the tool?** Start with:
+- [Installation](https://github.com/Yhzan95/GettingUpModdingTool/wiki/Installation)
+- [First Launch](https://github.com/Yhzan95/GettingUpModdingTool/wiki/First-Launch)
+- [Interface Overview](https://github.com/Yhzan95/GettingUpModdingTool/wiki/Interface-Overview)
 
+## Features
 - **Resource library** — detects the game install (Steam or manual folder), indexes ~17,000 files and lets you search them by name, type or folder.
 - **Character browser** — every character mesh with its variants and textures.
 - **Object browser** — props sorted into categories (weapons, graffiti tools, vehicles, furniture…).
