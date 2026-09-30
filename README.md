@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="src/GettingUpModTool/Resources/AppIconSource.png" width="96" alt="Getting Up Mod Tool icon">
+<img src="https://github.com/user-attachments/assets/884e632a-0bb9-43b8-a685-23ab2870e15b" width="96" alt="Getting Up Mod Tool icon">
 
 # Getting Up Mod Tool
 
